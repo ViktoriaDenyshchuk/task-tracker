@@ -1,0 +1,26 @@
+[project]
+name = "task-tracker"
+version = "0.1.0"
+description = "Мінімальний FastAPI-сервіс задач для демонстрації розробки на основі специфікацій"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "pydantic>=2.9",
+    "uvicorn>=0.30",
+    "openai>=1.50",
+    "python-dotenv>=1.0",
+    "tzdata>=2024.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
