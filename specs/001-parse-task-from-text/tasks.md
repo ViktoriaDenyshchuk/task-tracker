@@ -16,8 +16,8 @@ description: "Actionable tasks for creating tasks from natural language"
 
 **Purpose**: Add the model SDK dependency and prepare feature-specific evaluation data.
 
-- [ ] T001 Add the official OpenAI SDK dependency in `pyproject.toml` and update its resolved entries in `uv.lock`
-- [ ] T002 [P] Add the eight evaluation phrases and independently specified expected fields in `evals/cases.json`; this file has no dependency on the SDK manifest or lockfile
+- [X] T001 Add the official OpenAI SDK dependency in `pyproject.toml` and update its resolved entries in `uv.lock`
+- [X] T002 [P] Add the eight evaluation phrases and independently specified expected fields in `evals/cases.json`; this file has no dependency on the SDK manifest or lockfile
 
 ---
 
@@ -25,8 +25,8 @@ description: "Actionable tasks for creating tasks from natural language"
 
 **Purpose**: Establish injectable time and parser boundaries required by the feature.
 
-- [ ] T003 [P] Implement the Europe/Kyiv `get_today` dependency in `app/clock.py`
-- [ ] T004 [P] Define parser proposal types, controlled failure reasons, parser interface, and `get_parser` dependency in `app/parser.py`
+- [X] T003 [P] Implement the Europe/Kyiv `get_today` dependency in `app/clock.py`
+- [X] T004 [P] Define parser proposal types, controlled failure reasons, parser interface, and `get_parser` dependency in `app/parser.py`
 
 **Checkpoint**: Date and parser dependencies are independently replaceable by endpoint tests and evals.
 
@@ -40,16 +40,16 @@ description: "Actionable tasks for creating tasks from natural language"
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] Add endpoint tests for successful model parsing, response shape, persistence, and visibility through `GET /tasks` in `tests/test_parse_task.py`
-- [ ] T006 [P] [US1] Add parser tests for provider configuration, structured proposal decoding, timeout settings, disabled SDK retries, and SDK failure classification in `tests/test_parser.py`
+- [X] T005 [P] [US1] Add endpoint tests for successful model parsing, response shape, persistence, and visibility through `GET /tasks` in `tests/test_parse_task.py`
+- [X] T006 [P] [US1] Add parser tests for provider configuration, structured proposal decoding, timeout settings, disabled SDK retries, and SDK failure classification in `tests/test_parser.py`
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Configure OpenAI and OpenRouter SDK clients with a 20-second timeout and `max_retries=0` in `app/parser.py`
-- [ ] T008 [US1] Implement model proposal decoding and map provider responses and exceptions to controlled parser results in `app/parser.py`
-- [ ] T009 [US1] Add parse request/response schemas and the `POST /tasks/parse` route in `app/main.py`, without editing existing route handlers
-- [ ] T010 [US1] Validate model title, due date, priority, and tags before constructing `TaskCreate` in the new parse flow in `app/main.py`
-- [ ] T011 [US1] Save validated tasks through the existing `TaskStore` and return `path: "model"` and `parsed: true` in the new parse flow in `app/main.py`
+- [X] T007 [US1] Configure OpenAI and OpenRouter SDK clients with a 20-second timeout and `max_retries=0` in `app/parser.py`
+- [X] T008 [US1] Implement model proposal decoding and map provider responses and exceptions to controlled parser results in `app/parser.py`
+- [X] T009 [US1] Add parse request/response schemas and the `POST /tasks/parse` route in `app/main.py`, without editing existing route handlers
+- [X] T010 [US1] Validate model title, due date, priority, and tags before constructing `TaskCreate` in the new parse flow in `app/main.py`
+- [X] T011 [US1] Save validated tasks through the existing `TaskStore` and return `path: "model"` and `parsed: true` in the new parse flow in `app/main.py`
 
 **Checkpoint**: A valid model proposal creates a validated, persisted task without changing the `Task` schema or existing route behavior.
 
@@ -63,20 +63,20 @@ description: "Actionable tasks for creating tasks from natural language"
 
 ### Tests for User Story 2
 
-- [ ] T012 [US2] Add tests for empty, whitespace-only, 500-character, and over-limit input, asserting rejected requests never invoke the parser or save a task in `tests/test_parse_task.py`
-- [ ] T013 [US2] Add tests for absent date/priority defaults, explicit ISO fallback dates, title truncation, and hashtag extraction in `tests/test_parse_task.py`
-- [ ] T014 [US2] Add parameterized tests for model validation failures, all retryable and non-retryable reasons, retry counts, original reason preservation, and fallback response metadata in `tests/test_parse_task.py`
-- [ ] T015 [US2] Add tests for Europe/Kyiv date injection, model and explicit tag normalization/deduplication, invalid tags, and invalid or past model dates in `tests/test_parse_task.py`
+- [X] T012 [US2] Add tests for empty, whitespace-only, 500-character, and over-limit input, asserting rejected requests never invoke the parser or save a task in `tests/test_parse_task.py`
+- [X] T013 [US2] Add tests for absent date/priority defaults, explicit ISO fallback dates, title truncation, and hashtag extraction in `tests/test_parse_task.py`
+- [X] T014 [US2] Add parameterized tests for model validation failures, all retryable and non-retryable reasons, retry counts, original reason preservation, and fallback response metadata in `tests/test_parse_task.py`
+- [X] T015 [US2] Add tests for Europe/Kyiv date injection, model and explicit tag normalization/deduplication, invalid tags, and invalid or past model dates in `tests/test_parse_task.py`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Reject blank and over-500-character text with HTTP 422 before invoking the parser in the new parse flow in `app/main.py`
-- [ ] T017 [US2] Apply `medium` priority and null due-date defaults when valid model proposals omit those fields in the new parse flow in `app/main.py`
-- [ ] T018 [US2] Implement deterministic fallback title, explicit non-past `YYYY-MM-DD` extraction, medium priority, and explicit hashtag extraction in the new parse flow in `app/main.py`
-- [ ] T019 [US2] Retry exactly once for `timeout` and `rate_limited`, and preserve the first failure reason when fallback follows a failed retry in the new parse flow in `app/main.py`
-- [ ] T020 [US2] Return HTTP 201 with `rules_fallback`, `parsed: false`, `reason`, and `needs_review: true` for parser failures in the new parse flow in `app/main.py`
-- [ ] T021 [US2] Normalize explicit and model-suggested tags and enforce existing tag constraints before saving in the new parse flow in `app/main.py`
-- [ ] T022 Inspect the existing `evals/run_eval.py` against the eight-case contract; adapt it only where needed to use `get_parser` and `get_today`, isolate live model calls from tests, and report provider, model, run date, score out of 8, and count of invalid saved values. Do not recreate the runner; keep it an explicit live-eval command.
+- [X] T016 [US2] Reject blank and over-500-character text with HTTP 422 before invoking the parser in the new parse flow in `app/main.py`
+- [X] T017 [US2] Apply `medium` priority and null due-date defaults when valid model proposals omit those fields in the new parse flow in `app/main.py`
+- [X] T018 [US2] Implement deterministic fallback title, explicit non-past `YYYY-MM-DD` extraction, medium priority, and explicit hashtag extraction in the new parse flow in `app/main.py`
+- [X] T019 [US2] Retry exactly once for `timeout` and `rate_limited`, and preserve the first failure reason when fallback follows a failed retry in the new parse flow in `app/main.py`
+- [X] T020 [US2] Return HTTP 201 with `rules_fallback`, `parsed: false`, `reason`, and `needs_review: true` for parser failures in the new parse flow in `app/main.py`
+- [X] T021 [US2] Normalize explicit and model-suggested tags and enforce existing tag constraints before saving in the new parse flow in `app/main.py`
+- [X] T022 Inspect the existing `evals/run_eval.py` against the eight-case contract; adapt it only where needed to use `get_parser` and `get_today`, isolate live model calls from tests, and report provider, model, run date, score out of 8, and count of invalid saved values. Do not recreate the runner; keep it an explicit live-eval command.
 
 **Checkpoint**: Invalid text is rejected without model activity; valid text always creates either a validated model task or a review-marked fallback, never an HTTP 500 for model failures.
 
@@ -90,11 +90,11 @@ description: "Actionable tasks for creating tasks from natural language"
 
 ### Tests for User Story 3
 
-- [ ] T023 [US3] Add regression assertions for `GET /tasks`, `POST /tasks`, and `DELETE /tasks/{id}` in the new `tests/test_parse_task.py`; leave `tests/test_tasks.py` unchanged and do not alter existing endpoint expectations
+- [X] T023 [US3] Add regression assertions for `GET /tasks`, `POST /tasks`, and `DELETE /tasks/{id}` in the new `tests/test_parse_task.py`; leave `tests/test_tasks.py` unchanged and do not alter existing endpoint expectations
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Integrate only the new `POST /tasks/parse` flow with the existing `TaskStore` in `app/main.py`; preserve existing GET/POST/DELETE route handlers and request/response contracts, leave `tests/test_tasks.py` untouched, and do not change `Task`/`TaskCreate` schemas in `app/models.py`
+- [X] T024 [US3] Integrate only the new `POST /tasks/parse` flow with the existing `TaskStore` in `app/main.py`; preserve existing GET/POST/DELETE route handlers and request/response contracts, leave `tests/test_tasks.py` untouched, and do not change `Task`/`TaskCreate` schemas in `app/models.py`
 
 **Checkpoint**: Existing tracker clients retain their current endpoint contracts; compatibility evidence comes from unchanged existing tests plus T023 regression assertions and review of the diff.
 
@@ -104,8 +104,8 @@ description: "Actionable tasks for creating tasks from natural language"
 
 **Purpose**: Document configuration and reproducible verification steps.
 
-- [ ] T025 [P] Document provider configuration, fallback behavior, and offline/live evaluation commands in `README.md`
-- [ ] T026 [P] Keep manual API and evaluation instructions aligned with the contract in `specs/001-parse-task-from-text/quickstart.md`
+- [X] T025 [P] Document provider configuration, fallback behavior, and offline/live evaluation commands in `README.md`
+- [X] T026 [P] Keep manual API and evaluation instructions aligned with the contract in `specs/001-parse-task-from-text/quickstart.md`
 
 ---
 

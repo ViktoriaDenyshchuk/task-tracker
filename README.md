@@ -7,6 +7,7 @@
 | `GET /tasks` | список задач |
 | `POST /tasks` | створити задачу з полів `title`, `due_date`, `priority`, `tags` |
 | `DELETE /tasks/{id}` | видалити задачу |
+| `POST /tasks/parse` | створити задачу з текстової фрази через OpenAI або OpenRouter |
 
 Задачі зберігаються в пам'яті й у файлі `data/tasks.json`.
 
@@ -21,6 +22,14 @@ uv run uvicorn app.main:app --reload
 ```
 
 Після запуску відкрийте `http://127.0.0.1:8000/docs`.
+
+## Створення задачі з тексту
+
+`POST /tasks/parse` приймає JSON `{"text":"Здати звіт до п'ятниці, терміново #робота"}`. Успішний розбір повертає HTTP 201 із `task`, `path: "model"` і `parsed: true`. Якщо провайдер не відповідає або повертає невалідні поля, сервіс створює задачу з детермінованими правилами, повертає `path: "rules_fallback"`, `reason` і `needs_review: true`. Повторюється лише timeout або rate limit, рівно один раз. Порожній, лише пробільний або довший за 500 символів текст повертає HTTP 422.
+
+Для OpenAI задайте `OPENAI_API_KEY` та, за потреби, `OPENAI_MODEL` у локальному `.env`. Для OpenRouter задайте `LLM_PROVIDER=openrouter`, `OPENROUTER_API_KEY` та, за потреби, `OPENROUTER_MODEL` і `OPENROUTER_BASE_URL`. Типова модель — `gpt-4o-mini` для OpenAI і `openai/gpt-4o-mini` для OpenRouter. Ключі не додавайте до git.
+
+Офлайн тести не потребують ключа чи мережі: `uv run pytest`. Окремий live eval викликає налаштованого провайдера і перевіряє вісім фраз: `uv run python evals/run_eval.py --provider openai` або `uv run python evals/run_eval.py --provider openrouter`. Eval звітує провайдера, модель, дату запуску, результат із 8 і кількість невалідних збережених значень.
 
 ## Що в теці
 

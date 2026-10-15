@@ -89,15 +89,19 @@ def invalid_fields(task: dict, today: date) -> list[str]:
 
 def check_expectations(result: dict, expect: dict) -> list[str]:
     misses = []
+    task = result.get("task", result)
     for key, expected in expect.items():
         if key == "tags_include":
-            if expected not in (result.get("tags") or []):
+            if expected not in (task.get("tags") or []):
                 misses.append(f"tags не містить «{expected}»")
         elif key == "priority_not":
-            if result.get("priority") == expected:
+            if task.get("priority") == expected:
                 misses.append(f"priority = {expected}")
-        elif result.get(key) != expected:
-            misses.append(f"{key}: очікувано {expected!r}, отримано {result.get(key)!r}")
+        elif key in {"path", "reason", "parsed", "needs_review"}:
+            if result.get(key) != expected:
+                misses.append(f"{key}: очікувано {expected!r}, отримано {result.get(key)!r}")
+        elif task.get(key) != expected:
+            misses.append(f"{key}: очікувано {expected!r}, отримано {task.get(key)!r}")
     return misses
 
 
@@ -146,12 +150,14 @@ def run(provider: str, save: bool) -> int:
                     response = client.post("/tasks/parse", json={"text": case["text"]})
                     if response.status_code != 201:
                         result = {"status": response.status_code}
+                        task_result = result
                         misses = [f"HTTP {response.status_code}"]
                         problems = ["http"]
                         persisted = None
                         persisted_problems = []
                     else:
                         result = response.json()
+                        task_result = result.get("task") or {}
                         misses = check_expectations(result, case["expect"])
                         persisted_response = client.get("/tasks")
                         persisted_tasks = (
@@ -163,7 +169,7 @@ def run(provider: str, save: bool) -> int:
                             (
                                 task
                                 for task in persisted_tasks
-                                if isinstance(task, dict) and task.get("id") == result.get("id")
+                                if isinstance(task, dict) and task.get("id") == (result.get("task") or {}).get("id")
                             ),
                             None,
                         ) if isinstance(persisted_tasks, list) else None
@@ -174,13 +180,13 @@ def run(provider: str, save: bool) -> int:
                         else:
                             persisted_problems.extend(invalid_fields(persisted, today))
                             fields = ("title", "due_date", "priority", "tags")
-                            if any(persisted.get(field) != result.get(field) for field in fields):
+                            if any(persisted.get(field) != task_result.get(field) for field in fields):
                                 persisted_problems.append("response_persistence_mismatch")
                             if any(key in persisted for key in ("parsed", "path", "reason", "needs_review")):
                                 persisted_problems.append("provenance_persisted")
                             if persisted_problems:
                                 misses.append("збережений запис не відповідає контракту задачі")
-                        problems = invalid_fields(result, today) + persisted_problems
+                        problems = invalid_fields(task_result, today) + persisted_problems
                     ok = not misses and not problems
                     passed += ok
                     invalid_saved += bool(persisted_problems)
@@ -195,7 +201,7 @@ def run(provider: str, save: bool) -> int:
                             "path": result.get("path", "—"),
                             "reason": result.get("reason") or "—",
                             "saved": {
-                                k: (persisted if persisted is not None else result).get(k)
+                                k: (persisted if persisted is not None else task_result).get(k)
                                 for k in ("title", "due_date", "priority", "tags")
                             },
                             "ok": ok,
