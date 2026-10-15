@@ -13,11 +13,11 @@
 
 ## Requirement Completeness
 
-- [ ] Clarify unresolved contract choices recorded in `spec.md` before planning
+- [x] Clarify unresolved contract choices recorded in `spec.md` before planning
 - [ ] Requirements are testable and unambiguous after clarification
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
-- [ ] Acceptance scenarios cover fallback, validation, and explicit hashtags
+- [x] Acceptance scenarios cover fallback, validation, and explicit hashtags
 - [x] Edge cases are identified
 - [x] Scope is clearly bounded
 - [ ] Dependencies and assumptions confirmed after clarification
