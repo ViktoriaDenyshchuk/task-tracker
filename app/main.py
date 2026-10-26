@@ -81,7 +81,7 @@ def _validated_task(proposal, text: str, today: date) -> TaskCreate:
         due_date = date.fromisoformat(proposal.due_date)
         if due_date.isoformat() != proposal.due_date or due_date < today:
             raise ValueError("invalid date")
-    priority = proposal.priority or "medium"
+    priority = "medium" if proposal.priority is None else proposal.priority
     if priority not in {"low", "medium", "high"}:
         raise ValueError("invalid priority")
     tags = _tags([*(proposal.tags or []), *_explicit_tags(text)])

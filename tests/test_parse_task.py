@@ -130,6 +130,19 @@ def test_invalid_model_fields_fallback(setup_client, proposal):
     assert response.json()["reason"] == "invalid_semantics"
 
 
+def test_empty_model_priority_falls_back_as_invalid_semantics(setup_client):
+    parser = StubParser(TaskProposal(title="Use fallback", priority=""))
+    with client_with(parser) as client:
+        response = client.post("/tasks/parse", json={"text": "Use fallback"})
+
+    assert response.status_code == 201
+    assert response.json()["path"] == "rules_fallback"
+    assert response.json()["reason"] == "invalid_semantics"
+    assert response.json()["parsed"] is False
+    assert response.json()["needs_review"] is True
+    assert response.json()["task"]["priority"] == "medium"
+
+
 def test_tag_normalization_and_legacy_routes(setup_client):
     parser = StubParser(TaskProposal(title="Task", tags=[" Work ", "work", "HOME"]))
     with client_with(parser) as client:

@@ -179,3 +179,8 @@ Task: T006 Add parser boundary tests in tests/test_parser.py
 - `[P]` is reserved for tasks that have no dependency on incomplete work and touch independent files. T002 is independent of T001; tests T012–T015 share one file and are deliberately not parallel-marked.
 - Test tasks precede the implementation they cover. Tests must remain offline and leave `tests/test_tasks.py` unchanged; the live eval is not an automated test.
 - T023/T024 do not authorize changes to existing GET/POST/DELETE route handlers or schemas.
+
+## Phase 7: Convergence
+
+- [X] T027 Treat an explicitly empty model priority as invalid and route it to `rules_fallback`; add coverage in `tests/test_parse_task.py` per FR-013 / AC3 (partial)
+- [ ] T028 Run the eight-case live eval and save a report showing at least 7/8 expected outcomes and zero invalid saved values per SC-001 / AC8 (missing)
